@@ -1,0 +1,17 @@
+{
+  "name": "juna-mars-bot",
+  "version": "1.0.0",
+  "description": "Automation bot for the Juna Mars Telegram mini-game",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "author": "mejri02",
+  "license": "MIT",
+  "dependencies": {
+    "axios": "^1.7.2",
+    "http-proxy-agent": "^7.0.2",
+    "https-proxy-agent": "^7.0.4",
+    "socks-proxy-agent": "^8.0.3"
+  }
+}
