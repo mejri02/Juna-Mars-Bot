@@ -373,13 +373,18 @@ class JunaMarsBot {
         this.duty.timeLeft   = dutyTimeLeft;
         this.duty.reward     = Number(d.duty_reward) || 0;
 
-        const times = [];
-        if (this.mining.isActive && !this.mining.canClaim) times.push(this.mining.timeUntilFull);
-        if (this.farming.isActive && !this.farming.canClaim) times.push(this.farming.timeUntilFull);
-        if (this.duty.inProgress) times.push(this.duty.timeLeft);
-        if (this.staking.timeLeft > 0) times.push(this.staking.timeLeft);
+        // Fixed 8-hour mining cycle with +-10 min random jitter
+        // Mining/farming times from the API are intentionally ignored here
+        const MINING_BASE_SECS = 8 * 60 * 60;
+        const JITTER_SECS      = Math.floor(Math.random() * 20 * 60) - (10 * 60);
+        const miningCycleSecs  = MINING_BASE_SECS + JITTER_SECS;
 
-        this.nextCycleTime = times.length > 0 ? Math.min(...times) : 600;
+        // Only duty and staking can shorten the sleep below the mining cycle
+        const times = [];
+        if (this.duty.inProgress) times.push(this.duty.timeLeft);
+        if (this.staking.timeLeft > 0 && this.staking.timeLeft < miningCycleSecs) times.push(this.staking.timeLeft);
+
+        this.nextCycleTime = times.length > 0 ? Math.min(miningCycleSecs, ...times) : miningCycleSecs;
         this.nextCycleTime = Math.max(10, this.nextCycleTime);
     }
 
